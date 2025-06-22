@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cronómetro con Vibración</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 2rem;
+      background: #f5f5f5;
+    }
+    h1 {
+      margin-bottom: 0.5rem;
+    }
+    #tiempo {
+      font-size: 3rem;
+      margin: 1rem 0;
+    }
+    select, button {
+      padding: 0.6rem 1rem;
+      margin: 0.5rem;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cronómetro con Vibración</h1>
+  <label for="intervalo">Vibrar cada:</label>
+  <select id="intervalo">
+    <option value="3">3 minutos</option>
+    <option value="5" selected>5 minutos</option>
+    <option value="10">10 minutos</option>
+  </select>
+
+  <p id="tiempo">0:00</p>
+
+  <button onclick="iniciar()">Iniciar</button>
+  <button onclick="pausar()">Pausar</button>
+  <button onclick="reiniciar()">Reiniciar</button>
+
+  <script>
+    let segundos = 0;
+    let intervaloID = null;
+
+    function actualizarTiempo() {
+      segundos++;
+      const minutos = Math.floor(segundos / 60);
+      const seg = segundos % 60;
+      document.getElementById("tiempo").textContent = `${minutos}:${seg.toString().padStart(2, '0')}`;
+
+      const minutosVibracion = parseInt(document.getElementById("intervalo").value);
+      if (segundos % (minutosVibracion * 60) === 0) {
+        if ('vibrate' in navigator) {
+          navigator.vibrate([400, 150, 400]); // patrón de vibración
+        }
+      }
+    }
+
+    function iniciar() {
+      if (!intervaloID) {
+        intervaloID = setInterval(actualizarTiempo, 1000);
+      }
+    }
+
+    function pausar() {
+      clearInterval(intervaloID);
+      intervaloID = null;
+    }
+
+    function reiniciar() {
+      pausar();
+      segundos = 0;
+      document.getElementById("tiempo").textContent = "0:00";
+    }
+  </script>
+
+</body>
+</html>
